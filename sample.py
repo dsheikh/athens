@@ -26,26 +26,29 @@ Initialize streaming client with prefs
 '''
 tokens = prefs['tokens']
 client = StreamClient(str(tokens['consumer_key']),
-    str(tokens['consumer_secret']),
-    str(tokens['access_token']),
-    str(tokens['access_secret']))
+                      str(tokens['consumer_secret']),
+                      str(tokens['access_token']),
+                      str(tokens['access_secret']))
 
 '''
 Connecting to mongodb and setting up a client interface
 '''
 mclient = MongoClient()
-db_name = str(prefs['mongo']['db_name'])
+db_name = str(prefs['mongodb']['db_name'])
 db = mclient[db_name]
 
 '''
 Begin tracking using tracking expression provided in prefs
 '''
-track_exp = str(prefs['track_exp'])
-response = client.stream.statuses.filter.post(track=track_exp)
+track_exp = str(prefs['track']['expression'])
+loc = str(prefs['track']['location'])
+response = client.stream.statuses.filter.post(track=track_exp,
+                                              locations=loc)
 
 '''
 Iterates over the data returned in the response stream
 and stores the data into a mongodb database for parsing
 '''
 for data in response.stream():
-    db.posts.insert_one(data)
+    # db.posts.insert_one(data)
+    print data
